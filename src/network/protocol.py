@@ -7,6 +7,7 @@ class Protocol(ABC):
         self.function = conf.get('function')
         self.host     = conf.get('host')
         self.port     = conf.get('port')
+        self.retry_s  = conf.get('retry_s')
 
     @abstractmethod
     def connect(self, *args, **kwargs):
