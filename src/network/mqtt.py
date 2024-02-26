@@ -94,4 +94,3 @@ class MQTT(Protocol):
         self.mqttc.on_connect = on_connect_local_callback
         self.mqttc.on_disconnect = on_disconnect_local_callback
         self.mqttc.on_message = on_message_local_callback
-C:\Users\saif\Documents\software\ces_24-aio_last\ces_24-aio_last\functions\tcpip_gateway
