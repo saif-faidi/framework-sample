@@ -59,7 +59,7 @@ class MQTT(Protocol):
         res = self.mqttc.publish(topic, value, qos, retain)
         if res.rc != mqtt.MQTT_ERR_SUCCESS:
             if res.rc == mqtt.MQTT_ERR_NO_CONN:
-                self.logger.error('Failed to send message, Broker closed the TCP connection! error code : (4 = MQTT_ERR_NO_CONN)')
+                self.logger.error('Failed to send message, TCP connection is closed! error code:(4 = MQTT_ERR_NO_CONN)')
             else:
                 self.logger.error(f'Failed to send message, Error code: {res.rc}')
 

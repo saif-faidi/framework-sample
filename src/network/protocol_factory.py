@@ -14,17 +14,17 @@ class ProtocolEnum(Enum):
 class ProtocolFactory:
     @staticmethod
     def create_instance(conf:dict):
-        type   = conf.pop('type')
+        _type   = conf.pop('type')
         if type == 'mqtt':
             return MQTT(conf)
-        elif type == 'tcp':
-            raise NotImplementedError(f'Add implementation for {type}')
-        elif type == 'udp':
-            raise NotImplementedError(f'Add implementation for {type}')
-        elif type == 'can':
-            raise NotImplementedError(f'Add implementation for {type}')
-        elif type == 'lin':
-            raise NotImplementedError(f'Add implementation for {type}')
+        elif _type == 'tcp':
+            raise NotImplementedError(f'Add implementation for {_type}')
+        elif _type == 'udp':
+            raise NotImplementedError(f'Add implementation for {_type}')
+        elif _type == 'can':
+            raise NotImplementedError(f'Add implementation for {_type}')
+        elif _type == 'lin':
+            raise NotImplementedError(f'Add implementation for {_type}')
         else:
-            raise NotImplementedError(f'Add implementation for {type} Protocol')
+            raise NotImplementedError(f'Add implementation for {_type} Protocol')
 
