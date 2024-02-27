@@ -9,6 +9,7 @@ class Protocol(ABC):
         self.host = conf.get('host')
         self.port = conf.get('port')
         self.retry_s = conf.get('retry_s')
+        self.__on_receive = lambda data: data  # Do nothing
 
     @abstractmethod
     def connect(self, *args, **kwargs):
@@ -18,9 +19,9 @@ class Protocol(ABC):
     def send(self, data: Any):
         pass
 
-    @abstractmethod
-    def receive(self, data: Any):
-        pass
+    def on_receive(self, data: Any):
+        self.__on_receive(data)
+
 
     @abstractmethod
     def disconnect(self):

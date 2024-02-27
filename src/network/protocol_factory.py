@@ -15,7 +15,7 @@ class ProtocolFactory:
     @staticmethod
     def create_instance(conf:dict):
         _type   = conf.pop('type')
-        if type == 'mqtt':
+        if _type == 'mqtt':
             return MQTT(conf)
         elif _type == 'tcp':
             raise NotImplementedError(f'Add implementation for {_type}')

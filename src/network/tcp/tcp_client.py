@@ -1,58 +1,67 @@
 import sys
+import threading
 import time
 import socket
 import logging
-import paho.mqtt.client as mqtt
+
 
 from src.network.protocol import Protocol
 
 
-class MQTT(Protocol):
-
+class TCPClient(Protocol):
+    DEFAULT_BUFF_SIZE = 1024
     def __init__(self, conf):
         super().__init__(conf)
-        self.mqttc                      = None
-        self.sub_topics                 = conf.get('sub_topics') or []
-        self.__mqtt_client_id           = f'{socket.gethostname()}:{self.function}'
-        self.__check_mqtt_last_time     = 0
-        self.__mqtt_need_to_connect     = True
-        self.logger                     = logging.getLogger(__name__)
+        self.buff_size                 = conf.get('buffer_size', TCPClient.DEFAULT_BUFF_SIZE)
+        self.client_socket             = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        self.__check_tcp_last_time     = 0
+        self.__tcp_need_to_connect     = True
+        self.logger                    = logging.getLogger(__name__)
+        self.thread                    = threading.Thread(target=self.receive_loop)
+        self.stop_recv_event           = threading.Event()
+
+        self.logger = logging.getLogger(__name__)
 
         self.init_mqtt()
         self.connect()
-        self.subscribe()
+
 
     def connect(self):
-        while self.__mqtt_need_to_connect:
-
-            if time.time() > self.__check_mqtt_last_time + self.retry_s:
-                self.__check_mqtt_last_time = time.time()
+        while self.__tcp_need_to_connect:
+            if time.time() > self.__check_tcp_last_time + self.retry_s:
+                self.__check_tcp_last_time = time.time()
                 if self.host and self.port:
                     try:
-                        self.mqttc.connect(self.host, self.port)
-                        self.__mqtt_need_to_connect = False
-                        self.mqttc.loop_start()
+                        self.client_socket.connect((self.host, self.port))
+                        self.__tcp_need_to_connect = False
                         time.sleep(.1)
                     except Exception:
-                        self.logger.warning(f'Failed to connect to MQTT broker, retrying in {self.retry_s} second...')
+                        self.logger.warning(f'Failed to connect to TCP Server, retrying in {self.retry_s} second...')
                     else:
-                        self.logger.info('Successfully connected to MQTT Broker')
+                        self.logger.info('Successfully connected to TCP Server')
 
                 else:
                     self.logger.error(f'({self.host}, {self.port}) is not a valid socket, exiting...')
-                    self.__mqtt_need_to_connect = False
+                    self.__tcp_need_to_connect = False
                     sys.exit(1)
 
-    def subscribe(self):
-        """ Subscribe to all topics from config file"""
-        for topic in self.sub_topics:
-            self.mqttc.subscribe(topic, 2)
+    def receive_loop(self):
+        while not self.stop_recv_event.is_set():
+            received_data = self.client_socket.recv( self.buff_size ).decode()
+            if not received_data:
+                self.logger.error('Connection closed by server!')
+            else:
+                self.on_receive(received_data)
+
 
     def disconnect(self):
-        self.mqttc.disconnect()
+        self.stop_recv_event.set()
+        self.client_socket.close()
 
     def on_receive(self, message):
-        self.logger.debug(f'New MQTT message: {message.topic} => {str(message.payload.decode(errors="ignore"))}')
+        self.logger.info(f'received {message}')
+
 
     def send(self, *data):
         value, topic, qos, retain = data
@@ -63,7 +72,7 @@ class MQTT(Protocol):
             else:
                 self.logger.error(f'Failed to send message, Error code: {res.rc}')
 
-    def init_mqtt(self):
+    def init_tcp(self):
         def on_connect_local_callback(client, userdata, flags, rc) -> None:
             """
             :param client       : The mqtt client that triggered the callback
@@ -82,7 +91,7 @@ class MQTT(Protocol):
         def on_disconnect_local_callback(client, userdata, rc):
             if rc != 0:
                 self.logger.critical('Unexpected disconnection. Reconnecting...')
-                userdata.__mqtt_need_to_connect = True
+                userdata.__tcp_need_to_connect = True
                 self.connect()
                 self.logger.info('Connection is back!')
             else:

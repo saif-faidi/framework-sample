@@ -1,11 +1,20 @@
 function: pneumatic
 protocol:
-  type: mqtt
+#  type: mqtt
+#  host: 127.0.0.1
+#  port: 1883
+#  function: pneumatic
+#  retry_s : 1
+#  sub_topics : [CmdConsole, RPiSensor]
+
+  type: tcp
   host: 127.0.0.1
-  port: 1883
+  port: 5555
   function: pneumatic
-  retry_s : 1
-  sub_topics : []
+  retry_s: 1
+  buffer_size: 1024
+  encoding: utf-8
+
 
 logging:
   version: 1
@@ -16,10 +25,10 @@ logging:
   handlers:
     console:
       class: logging.StreamHandler
-      level: INFO
+      level: DEBUG
       formatter: default
       stream: ext://sys.stdout
 
   root:
-    level: INFO
+    level: DEBUG
     handlers: [console]

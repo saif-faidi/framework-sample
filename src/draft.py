@@ -1,10 +1,12 @@
-_dict = {'k1' : 1 , 'k2': 2}
 
-k1,k2= _dict
-print(k1)
-print(k2)
+def tcp_send(*data):
+    value = data[0]
+    print(value)
 
-def func(**kwargs):
-    print(kwargs)
+def mqtt_send(*data):
+    data, topic, qos, retain = data
+    print(data)
 
-func(**_dict)
+if __name__ == "__main__":
+    tcp_send('value', 'Topic', 2, False)
+    tcp_send("value", "other parameters")
