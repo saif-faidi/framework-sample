@@ -6,7 +6,12 @@ from src.network.protocol_factory import ProtocolFactory
 
 #https://stackoverflow.com/questions/50731203/should-i-use-events-semaphores-locks-conditions-or-a-combination-thereof-to
 
-def receive_clbk(message):
+def mqtt_receive_clbk(message):
+    """ callback should be implemented externally not in the class Sensor because class sensor should not know about
+    which protocl is being used """
+    logger.debug(f'New MQTT message:))))))) {message.topic} => {str(message.payload.decode(errors="ignore"))}')
+
+def tcp_receive_clbk(message):
     """ callback should be implemented externally not in the class Sensor because class sensor should not know about
     which protocl is being used """
     logger.debug(f'New MQTT message:))))))) {message.topic} => {str(message.payload.decode(errors="ignore"))}')

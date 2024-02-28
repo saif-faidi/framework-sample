@@ -64,13 +64,13 @@ class TCPClient(Protocol):
 
 
     def send(self, *data):
-        value, topic, qos, retain = data
-        res = self.mqttc.publish(topic, value, qos, retain)
-        if res.rc != mqtt.MQTT_ERR_SUCCESS:
-            if res.rc == mqtt.MQTT_ERR_NO_CONN:
-                self.logger.error('Failed to send message, TCP connection is closed! error code:(4 = MQTT_ERR_NO_CONN)')
-            else:
-                self.logger.error(f'Failed to send message, Error code: {res.rc}')
+        if data :
+            _data = data[0]
+            try:
+                self.client_socket.sendall(_data.encode())
+            except socket.error as e:
+                self.logger.error(f"Error: Failed to send data, reason : {e}")
+
 
     def init_tcp(self):
         def on_connect_local_callback(client, userdata, flags, rc) -> None:
