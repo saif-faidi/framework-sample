@@ -19,10 +19,7 @@ class TCPClient(Protocol):
         self.logger                    = logging.getLogger(__name__)
         self.thread                    = threading.Thread(target=self.receive_loop)
         self.stop_recv_event           = threading.Event()
-
         self.logger = logging.getLogger(__name__)
-
-
         self.connect()
 
 
@@ -51,7 +48,7 @@ class TCPClient(Protocol):
             if  received_data:
                 self.on_receive(received_data)
             else:
-                self.on_disconnect_clbk()
+                self._on_disconnect_clbk()
 
     def disconnect(self):
         self.stop_recv_event.set()
@@ -70,7 +67,7 @@ class TCPClient(Protocol):
                 self.logger.error(f"Error: Failed to send data, reason : {e}")
 
 
-    def on_disconnect_clbk(self):
+    def _on_disconnect_clbk(self):
         self.logger.critical('Unexpected disconnection. Reconnecting...')
         self.__tcp_need_to_connect = True
         self.connect()
