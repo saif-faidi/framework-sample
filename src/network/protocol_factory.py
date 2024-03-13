@@ -1,5 +1,5 @@
 from src.network.mqtt import MQTT
-from src.network.tcp.tcp_client import TCPClient
+from src.network.tcp_client import TCPClient
 
 from enum import Enum
 

@@ -9,6 +9,8 @@ from src.network.protocol import Protocol
 
 class MQTT(Protocol):
 
+    DEFAULT_QOS = 2
+
     def __init__(self, conf):
         super().__init__(conf)
         self.mqttc                      = None
@@ -46,7 +48,7 @@ class MQTT(Protocol):
     def subscribe(self):
         """ Subscribe to all topics from config file"""
         for topic in self.sub_topics:
-            self.mqttc.subscribe(topic, 2)
+            self.mqttc.subscribe(topic, MQTT.DEFAULT_QOS)
 
     def disconnect(self):
         self.mqttc.disconnect()
