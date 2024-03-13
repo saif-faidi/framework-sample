@@ -1,4 +1,5 @@
 from src.network.mqtt import MQTT
+from src.network.tcp.tcp_client import TCPClient
 
 from enum import Enum
 
@@ -18,7 +19,7 @@ class ProtocolFactory:
         if _type == 'mqtt':
             return MQTT(conf)
         elif _type == 'tcp':
-            raise NotImplementedError(f'Add implementation for {_type}')
+            return TCPClient(conf)
         elif _type == 'udp':
             raise NotImplementedError(f'Add implementation for {_type}')
         elif _type == 'can':

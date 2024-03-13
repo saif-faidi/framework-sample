@@ -14,7 +14,6 @@ class TCPClient(Protocol):
         super().__init__(conf)
         self.buff_size                 = conf.get('buffer_size', TCPClient.DEFAULT_BUFF_SIZE)
         self.client_socket             = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         self.__check_tcp_last_time     = 0
         self.__tcp_need_to_connect     = True
         self.logger                    = logging.getLogger(__name__)
@@ -23,7 +22,7 @@ class TCPClient(Protocol):
 
         self.logger = logging.getLogger(__name__)
 
-        self.init_mqtt()
+
         self.connect()
 
 
@@ -49,11 +48,10 @@ class TCPClient(Protocol):
     def receive_loop(self):
         while not self.stop_recv_event.is_set():
             received_data = self.client_socket.recv( self.buff_size ).decode()
-            if not received_data:
-                self.logger.error('Connection closed by server!')
-            else:
+            if  received_data:
                 self.on_receive(received_data)
-
+            else:
+                self.on_disconnect_clbk()
 
     def disconnect(self):
         self.stop_recv_event.set()
@@ -65,42 +63,14 @@ class TCPClient(Protocol):
 
     def send(self, *data):
         if data :
-            _data = data[0]
+            value = data[0]
             try:
-                self.client_socket.sendall(_data.encode())
+                self.client_socket.sendall(value.encode())
             except socket.error as e:
                 self.logger.error(f"Error: Failed to send data, reason : {e}")
 
 
-    def init_tcp(self):
-        def on_connect_local_callback(client, userdata, flags, rc) -> None:
-            """
-            :param client       : The mqtt client that triggered the callback
-            :param userdata     : parameter that can be used to pass custom user data to the callback itself that's
-             not related to this mqtt client, we passed defined "self" instance to be able to use the defined callbacks
-            :param flags        : used to handle qos, retain..
-            :param rc           : return code of the mqtt operation
-            :return:
-            """
-            if rc != mqtt.MQTT_ERR_SUCCESS:
-                userdata.error(f'failed to connect to MQTT broker, return code "{rc}", exiting...')
-                # userdata.exit_loop_event.set()
-            else:
-                userdata.connect()
-
-        def on_disconnect_local_callback(client, userdata, rc):
-            if rc != 0:
-                self.logger.critical('Unexpected disconnection. Reconnecting...')
-                userdata.__tcp_need_to_connect = True
-                self.connect()
-                self.logger.info('Connection is back!')
-            else:
-                userdata.disconnect()
-
-        def on_message_local_callback(client, userdata, message):
-            userdata.receive(message)
-
-        self.mqttc = mqtt.Client(client_id=self.__mqtt_client_id, userdata=self)
-        self.mqttc.on_connect = on_connect_local_callback
-        self.mqttc.on_disconnect = on_disconnect_local_callback
-        self.mqttc.on_message = on_message_local_callback
+    def on_disconnect_clbk(self):
+        self.logger.critical('Unexpected disconnection. Reconnecting...')
+        self.__tcp_need_to_connect = True
+        self.connect()

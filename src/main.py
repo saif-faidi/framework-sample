@@ -8,13 +8,13 @@ from src.network.protocol_factory import ProtocolFactory
 
 def mqtt_receive_clbk(message):
     """ callback should be implemented externally not in the class Sensor because class sensor should not know about
-    which protocl is being used """
+    which protocol is being used """
     logger.debug(f'New MQTT message:))))))) {message.topic} => {str(message.payload.decode(errors="ignore"))}')
 
 def tcp_receive_clbk(message):
     """ callback should be implemented externally not in the class Sensor because class sensor should not know about
-    which protocl is being used """
-    logger.debug(f'New MQTT message:))))))) {message.topic} => {str(message.payload.decode(errors="ignore"))}')
+    which protocol is being used """
+    logger.debug(f'New TCP messag {message}')
 
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     sensor.start()
 
 
-    sensor.set_receive_func(receive_clbk)
+    sensor.set_receive_func(tcp_receive_clbk)
 
 
     while True:
@@ -43,8 +43,6 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             sensor.stop()
             protocol.disconnect()
-
-            break
             sys.exit(0)
 
 

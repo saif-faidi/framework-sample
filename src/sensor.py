@@ -15,6 +15,7 @@ class Sensor:
     def run(self):
         while not self.stop_event.is_set():
             random_value = random.randint(0, 100)
+            random_value = str(random_value)
             self.protocol.send(random_value, 'Topic', 2, False)
             time.sleep(1)
 
