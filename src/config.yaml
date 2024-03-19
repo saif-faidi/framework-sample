@@ -1,19 +1,59 @@
-function: pneumatic
-protocol:
-#  type: mqtt
-#  host: 127.0.0.1
-#  port: 1883
-#  function: pneumatic
-#  retry_s : 1
-#  sub_topics : [CmdConsole, RPiSensor]
+pneumatic:
+  protocol:
+    type: tcp
+    host: 127.0.0.1
+    port: 5555
+    function: Pneumatic
+    retry_s: 1
+    buffer_size: 1024
+    encoding: utf-8
 
-  type: tcp
-  host: 127.0.0.1
-  port: 5555
-  function: pneumatic
-  retry_s: 1
-  buffer_size: 1024
-  encoding: utf-8
+
+thermal:
+  protocol:
+    type: mock
+    host: 127.0.0.1
+    port: 1883
+    function: Thermal
+    retry_connection_s : 1
+    sub_topics :
+      heat_all_sub      : Heating/All/HeatingReq
+      heat_backrest_sub : Heating/Backrest/HeatingReq
+      heat_cushion_sub  : Heating/Cushion/HeatingReq
+      vent_all_sub      : Ventilation/All/VentilationReq
+      vent_backrest_sub : Ventilation/Backrest/VentilationReq
+      vent_cushion_sub  : Ventilation/Cushion/VentilationReq
+    pub_topics :
+      heat_all_pub      : Heating/All/HeatingSta
+      heat_backrest_pub : Heating/Backrest/HeatingSta
+      heat_cushion_pub  : Heating/Cushion/HeatingSta
+      vent_all_pub      : Ventilation/All/VentilationSta
+      vent_backrest_pub : Ventilation/Backrest/VentilationSta
+      vent_cushion_pub  : Ventilation/Cushion/VentilationSta
+  heating_levels     : [0,1,2,3]
+  ventilation_levels : [0,1,2,3]
+
+
+rpi_ventilation:
+  protocol:
+    type: mock
+    host: 127.0.0.1
+    port: 1883
+    function: Ventilation
+    retry_connection_s : 1
+    sub_topics :
+      vent_all_sub      : Ventilation/All/VentilationReq
+      vent_backrest_sub : Ventilation/Backrest/VentilationReq
+      vent_cushion_sub  : Ventilation/Cushion/VentilationReq
+    pub_topics :
+      vent_all_pub      : Ventilation/All/VentilationSta
+      vent_backrest_pub : Ventilation/Backrest/VentilationSta
+      vent_cushion_pub  : Ventilation/Cushion/VentilationSta
+  ventilation_levels : [0,1,2,3]
+  frequency: 100
+  gpio_cushion: 23  #OUT_0
+  gpio_backrest: 14 #OUT_1
+
 
 
 logging:

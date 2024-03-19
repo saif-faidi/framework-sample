@@ -1,16 +1,6 @@
 from src.network.mqtt import MQTT
 from src.network.tcp_client import TCPClient
-
-from enum import Enum
-
-class ProtocolEnum(Enum):
-    MQTT                = 'mqtt'
-    TCP                 = 'tcp'
-    UDP                 = 'udp'
-    SOCKET_IO           = 'socket-io'
-    CAN                 = 'can'
-    LIN                 = 'lin'
-
+from src.network.mock_client import MockClient
 
 class ProtocolFactory:
     @staticmethod
@@ -26,6 +16,8 @@ class ProtocolFactory:
             raise NotImplementedError(f'Add implementation for {_type}')
         elif _type == 'lin':
             raise NotImplementedError(f'Add implementation for {_type}')
+        elif _type == 'mock':
+            return MockClient(conf)
         else:
             raise NotImplementedError(f'Add implementation for {_type} Protocol')
 

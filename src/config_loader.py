@@ -44,6 +44,7 @@ class ConfigLoader:
             default_conf_path = os.path.abspath(os.path.join(current_directory, ConfigLoader.DEFAULT_CONFIG_FILE))
             return default_conf_path
 
+
     def read_config_file(self, file_path: str = '') -> Any:
         """" returnn the configuration from file_path as a dict value """
         file = self._check_file_exist(file_path)

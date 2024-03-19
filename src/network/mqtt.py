@@ -14,11 +14,13 @@ class MQTT(Protocol):
     def __init__(self, conf):
         super().__init__(conf)
         self.mqttc                      = None
-        self.sub_topics                 = conf.get('sub_topics') or []
+        # TODO change
+        self.sub_topics                 = conf.get('sub_topics') or {}
         self.__mqtt_client_id           = f'{socket.gethostname()}:{self.function}'
         self.__check_mqtt_last_time     = 0
         self.__mqtt_need_to_connect     = True
-        self.logger                     = logging.getLogger(__name__)
+        # Example: __mqtt__MQTT[Thermal]
+        self.logger = logging.getLogger(f'{__name__}{__class__.__name__}[{conf.get("function")}]')
 
         self.init_mqtt()
         self.connect()
@@ -47,7 +49,7 @@ class MQTT(Protocol):
 
     def subscribe(self):
         """ Subscribe to all topics from config file"""
-        for topic in self.sub_topics:
+        for topic in self.sub_topics.values():
             self.mqttc.subscribe(topic, MQTT.DEFAULT_QOS)
 
     def disconnect(self):
