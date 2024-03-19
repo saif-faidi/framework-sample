@@ -21,9 +21,9 @@ class RPI_Ventilation:
         # Set GPIOs to output and reset duty cycle
         os.system('sudo pigpiod')
         time.sleep(2)
-        self.gpio_backrest  = self.config('gpio_backrest')
-        self.gpio_cushion   = self.config('gpio_cushion')
-        frequency           = self.config('frequency')
+        self.gpio_backrest  = self.config.get('gpio_backrest')
+        self.gpio_cushion   = self.config.get('gpio_cushion')
+        frequency           = self.config.get('frequency')
         self.pi             = pigpio.pi()
         self._init_gpio(self.gpio_backrest, frequency)
         self._init_gpio(self.gpio_cushion, frequency)

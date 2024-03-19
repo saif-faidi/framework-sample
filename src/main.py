@@ -1,10 +1,14 @@
 import sys
+import os
 import time
+import signal
+import argparse
 import logging.config
 from src.config_loader import ConfigLoader
 from src.network.protocol_factory import ProtocolFactory
 from src.draft.sensor import Sensor as CVBController
 from src.thermal.app import Thermal
+from src.rpi_ventilation.app import RPI_Ventilation
 
 class Message:
     def __init__(self, topic, payload):
@@ -16,18 +20,31 @@ class Message:
 # TODO make sure threads are cleaned correctly
 # TODO add command line arguments
 
-# def mqtt_receive_clbk(message):
-#     """ callback should be implemented externally not in the class Sensor because class sensor should not know about
-#     which protocol is being used """
-#     logger.debug(f'New MQTT message:))))))) {message.topic} => {str(message.payload.decode(errors="ignore"))}')
-#
-# def tcp_receive_clbk(message):
-#     """ callback should be implemented externally not in the class Sensor because class sensor should not know about
-#     which protocol is being used """
-#     logger.debug(f'New TCP messag {message}')
+def clean_exit(_signo, _stack_frame):
+    """
+    2  =>  SIGINT  => CTRL+C - Interrupt from keyboard
+    15 =>  SIGTERM => External Exit request - Termination signal
+    """
+    global application_running
+    if application_running:
+        application_running = False
+        if _signo == signal.SIGINT:
+            # TODO check original code
+            print('\b\b  \b\b\r', end='')
+            logger.info('Exit requested by user...')
+        elif _signo == signal.SIGTERM:
+            logger.warning('Exit requested by system...')
+    elif _signo == signal.SIGINT:
+        # Emergency exit if process is blocked
+        exit()
 
 
 if __name__ == "__main__":
+
+    application_running = True
+    signal.signal(signal.SIGINT, clean_exit)
+    signal.signal(signal.SIGTERM, clean_exit)
+
     conf_loader     = ConfigLoader()
     config          = conf_loader.read_config_file()
 
@@ -45,7 +62,7 @@ if __name__ == "__main__":
     # cvb_controller.start()
 
     # Config for Thermal
-    thermal_conf   = config.get('rpi_ventilation')
+    thermal_conf   = config.get('thermal')
     protocol       = ProtocolFactory.create_instance(thermal_conf.get('protocol'))
     thermal        = Thermal(thermal_conf, protocol)
 

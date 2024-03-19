@@ -54,19 +54,24 @@ rpi_ventilation:
   gpio_cushion: 23  #OUT_0
   gpio_backrest: 14 #OUT_1
 
+services:
 
 
 logging:
   version: 1
   disable_existing_loggers: False
   formatters:
+    service_formatter:
+      (): src.service_formatter.ServiceFormatter
+      format_str: '{time} - {name} - {levelname} - {message}'
+      datefmt: "%Y-%m-%d %H:%M:%S"  # Customize the date format as needed
     default:
       format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
   handlers:
     console:
       class: logging.StreamHandler
       level: DEBUG
-      formatter: default
+      formatter: service_formatter
       stream: ext://sys.stdout
 
   root:
