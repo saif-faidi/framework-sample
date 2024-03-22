@@ -46,7 +46,7 @@ class ConfigLoader:
 
 
     def read_config_file(self, file_path: str = '') -> Any:
-        """" returnn the configuration from file_path as a dict value """
+        """" return the configuration from file_path as a dict value """
         file = self._check_file_exist(file_path)
         try:
             with open(file, 'r') as f:

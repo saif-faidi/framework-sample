@@ -9,10 +9,3 @@ class ExitCode(Enum):
     FILE_NOT_FOUND = 127
 
 
-class FileExtension(Enum):
-    TXT = auto()
-    CSV = auto()
-    JSON = auto()
-    XML = auto()
-    YAML = auto()
-    # You can add more file extensions as needed

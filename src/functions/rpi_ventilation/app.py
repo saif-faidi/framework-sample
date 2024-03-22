@@ -7,10 +7,11 @@ import time
 import pigpio
 import logging
 
+
 class RPI_Ventilation:
 
     def __init__(self, config, protocol = None):
-
+        super().__init__()
         self.logger     = logging.getLogger(f'{__name__}{__class__.__name__}')
         self.config     = config
         self.protocol   = protocol

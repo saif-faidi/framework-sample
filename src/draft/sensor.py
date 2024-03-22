@@ -11,6 +11,7 @@ class Sensor:
         self.protocol = protocol
         self.thread = threading.Thread(target=self.run)
         self.stop_event = threading.Event()
+        self.start()
 
     def run(self):
         while not self.stop_event.is_set():

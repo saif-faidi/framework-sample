@@ -6,11 +6,13 @@
 import os
 import logging
 
+
 class Thermal:
 
     def __init__(self, config, protocol = None):
         os.chdir(os.path.abspath(os.path.dirname(__file__)))
-        self.logger     = logging.getLogger(f'{__name__}{__class__.__name__}')
+        super().__init__()
+        self.logger     = logging.getLogger(f'{__name__}_{__class__.__name__}')
         self.config     = config
         self.protocol   = protocol
         #can be ignored if we use another protocol than MQTT
